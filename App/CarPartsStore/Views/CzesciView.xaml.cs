@@ -1,4 +1,5 @@
-﻿using CarPartsStore.Models;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,14 +11,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CarPartsStore
+namespace CarPartsStore.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Logika interakcji dla klasy CzesciView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class CzesciView : Window
     {
-        public MainWindow()
+        public CzesciView()
         {
             InitializeComponent();
         }
