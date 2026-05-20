@@ -20,7 +20,10 @@ namespace CarPartsStore.ViewModels
 
         partial void OnWybranaCzescChanged(Czesci value) => WypelnijFormularz(value);
 
-        private string textWyszukiwania;
+        [ObservableProperty]
+        private string tekstWyszukiwania;
+
+        partial void OnTekstWyszukiwaniaChanged(string value) => Wczytaj();
 
         [ObservableProperty] private string formNazwa;
         [ObservableProperty] private string formNrKatalogowy;
@@ -44,9 +47,9 @@ namespace CarPartsStore.ViewModels
                 using var db = new CarPartsShopContext();
                 var zapytanie = db.Czesci.Include(c => c.Kategoria).AsQueryable();
 
-                if (!string.IsNullOrWhiteSpace(textWyszukiwania)) 
+                if (!string.IsNullOrWhiteSpace(tekstWyszukiwania)) 
                 { 
-                    zapytanie = zapytanie.Where(c => c.Nazwa.Contains(textWyszukiwania));
+                    zapytanie = zapytanie.Where(c => c.Nazwa.Contains(tekstWyszukiwania));
                 }
 
                 Czesci.Clear();
