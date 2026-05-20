@@ -13,9 +13,6 @@ using System.Windows.Shapes;
 
 namespace CarPartsStore.Views
 {
-    /// <summary>
-    /// Logika interakcji dla klasy CzesciView.xaml
-    /// </summary>
     public partial class CzesciView : Window
     {
         public CzesciView()

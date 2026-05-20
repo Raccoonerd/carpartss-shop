@@ -9,20 +9,73 @@
     <Window.DataContext>
         <vm:CzesciViewModel/>
     </Window.DataContext>
-    
-    <Grid>
-        <DataGrid ItemsSource="{Binding Czesci}"
-                  IsReadOnly="True"
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Text="Zarządzanie częśćiami"
+                   FontSize="20" FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="0"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,10">
+            <TextBlock Text="Szukaj:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox Width="250"
+                     Text="{Binding TekstWyszukiwania, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" Grid.Column="0"
+                  ItemsSource="{Binding Czesci}"
+                  SelectedItem="{Binding WybranaCzesc, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  AutoGenerateColumns="False">
+                  IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Nazwa" Binding="{Binding Nazwa}" Width="*"/>
-                <DataGridTextColumn Header="Nr katalogowy" Binding="{Binding NrKatalogowy}" Width="120"/>
+                <DataGridTextColumn Header="Nr Katalogowy" Binding="{Binding NrKatalogowy}" Width="120"/>
                 <DataGridTextColumn Header="Kategoria" Binding="{Binding Kategoria.Nazwa}" Width="120"/>
                 <DataGridTextColumn Header="Cena" Binding="{Binding Cena, StringFormat={}{0:N2} zł}" Width="100"/>
-                <DataGridTextColumn Header="Stan" Binding="{Binding StanMagazynowy}" Width="80"/>
+                <DataGridTextColumn Header="Stan" Binding="{Binding StanMagazynowy}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>
 
+        <StackPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="2">
+            <TextBlock Text="Formularz" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Nazwa:"/>
+            <TextBox Text="{Binding FormNazwa, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+            <TextBlock Text="Numer katalogowy:"/>
+            <TextBox Text="{Binding FormNrKatalogowy, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+            <TextBlock Text="Kategoria:"/>
+            <ComboBox ItemsSource="{Binding Kategorie}"
+                      DisplayMemberPath="Nazwa"
+                      SelectedValuePath="Id"
+                      SelectedValue="{Binding FormKategoriaId}"
+                      Margin="0,0,0,8"/>
+
+            <TextBlock Text="Cena (zł):"/>
+            <TextBox Text="{Binding FormCena, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+            <TextBlock Text="Stan magazynowy:"/>
+            <TextBox Text="{Binding FormStan, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,15"/>
+
+            <Button Content="Dodaj" Command="{Binding DodajCommand}"   Height="30" Margin="0,0,0,5"/>
+            <Button Content="Zapisz zmiany" Command="{Binding ZapiszCommand}"  Height="30" Margin="0,0,0,5"/>
+            <Button Content="Usuń" Command="{Binding UsunCommand}"    Height="30" Margin="0,0,0,5"/>
+            <Button Content="Wyczyść" Command="{Binding WyczyscCommand}" Height="30"/>
+        </StackPanel>
     </Grid>
 </Window>
