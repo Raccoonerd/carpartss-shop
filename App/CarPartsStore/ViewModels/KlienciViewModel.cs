@@ -11,7 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace CarPartsStore.ViewModels
 {
-    internal partial class KlienciViewModel : ObservableObject
+    public partial class KlienciViewModel : ObservableObject
     {
         public ObservableCollection<Klienci> Klienci { get; } = new();
 
