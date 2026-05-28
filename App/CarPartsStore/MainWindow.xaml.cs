@@ -10,11 +10,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CarPartsStore.Views
+namespace CarPartsStore
 {
-    public partial class SprzedazView : UserControl
+    public partial class MainWindow : Window
     {
-        public SprzedazView()
+        public MainWindow()
         {
             InitializeComponent();
         }

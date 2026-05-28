@@ -13,7 +13,7 @@ using System.Windows.Shapes;
 
 namespace CarPartsStore.Views
 {
-    public partial class CzesciView : Window
+    public partial class CzesciView : UserControl
     {
         public CzesciView()
         {
