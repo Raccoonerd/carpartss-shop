@@ -8,13 +8,14 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace CarPartsStore.Views
 {
-    public partial class KlienciView : UserControl
+    public partial class PartsView : UserControl
     {
-        public KlienciView()
+        public PartsView()
         {
             InitializeComponent();
         }

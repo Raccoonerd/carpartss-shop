@@ -12,9 +12,9 @@ using System.Windows.Shapes;
 
 namespace CarPartsStore.Views
 {
-    public partial class SprzedazView : UserControl
+    public partial class CustomersView : UserControl
     {
-        public SprzedazView()
+        public CustomersView()
         {
             InitializeComponent();
         }

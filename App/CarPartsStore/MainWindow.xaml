@@ -1,9 +1,9 @@
 ﻿<Window x:Class="CarPartsStore.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:CarPartsStore.ViewModels"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Sklep z częściami samochodowymi" 
+        xmlns:vm="clr-namespace:CarPartsStore.ViewModels"
+        Title="Car Parts Store"
         Height="600" Width="1200"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -34,7 +34,7 @@
                            HorizontalAlignment="Center"
                            Margin="0,0,0,30"/>
 
-                <Button Command="{Binding PokazCzesciCommand}"
+                <Button Command="{Binding ShowPartsCommand}"
                         Style="{StaticResource MaterialDesignFlatLightBgButton}"
                         Foreground="White"
                         Height="48" Margin="8,0,8,4"
@@ -45,7 +45,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button Command="{Binding PokazKlientowCommand}"
+                <Button Command="{Binding ShowCustomersCommand}"
                         Style="{StaticResource MaterialDesignFlatLightBgButton}"
                         Foreground="White"
                         Height="48" Margin="8,0,8,4"
@@ -56,7 +56,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button Command="{Binding PokazSprzedazCommand}"
+                <Button Command="{Binding ShowSalesCommand}"
                         Style="{StaticResource MaterialDesignFlatLightBgButton}"
                         Foreground="White"
                         Height="48" Margin="8,0,8,4"
@@ -66,7 +66,6 @@
                         <TextBlock Text="Sprzedaż" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-           
             </StackPanel>
         </materialDesign:Card>
 
@@ -81,8 +80,7 @@
                                   Color="Black"
                                   Opacity="0.6"/>
             </materialDesign:Card.Effect>
-            <ContentControl Content="{Binding AktualnyWidok}"/>
+            <ContentControl Content="{Binding CurrentView}"/>
         </materialDesign:Card>
     </Grid>
-    
 </Window>

@@ -1,30 +1,26 @@
 ﻿using CarPartsStore.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CarPartsStore.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
         [ObservableProperty]
-        private object aktualnyWidok;
+        private object currentView;
 
         public MainViewModel()
         {
-            AktualnyWidok = new SprzedazView();
+            CurrentView = new SalesView();
         }
 
         [RelayCommand]
-        private void PokazCzesci() => AktualnyWidok = new CzesciView();
+        private void ShowParts() => CurrentView = new PartsView();
 
         [RelayCommand]
-        private void PokazKlientow() => AktualnyWidok = new KlienciView();
+        private void ShowCustomers() => CurrentView = new CustomersView();
 
         [RelayCommand]
-        private void PokazSprzedaz() => AktualnyWidok = new SprzedazView();
-
+        private void ShowSales() => CurrentView = new SalesView();
     }
 }

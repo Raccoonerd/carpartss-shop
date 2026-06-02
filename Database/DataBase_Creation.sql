@@ -1,39 +1,50 @@
-CREATE TABLE Kategorie (
+CREATE DATABASE CarPartsStore;
+GO
+
+USE CarPartsStore;
+GO
+
+CREATE TABLE Categories (
 	Id INT IDENTITY(1,1) PRIMARY KEY,
-	Nazwa NVARCHAR(255) NOT NULL
+	Name NVARCHAR(255) NOT NULL
 );
+GO
 
-CREATE TABLE Czesci (
+CREATE TABLE Parts (
 	Id INT IDENTITY(1,1) PRIMARY KEY,
-	Nazwa NVARCHAR(255) NOT NULL,
-	NrKatalogowy NVARCHAR(255) NOT NULL,
-	KategoriaId INT NOT NULL,
-	Cena DECIMAL(18, 2) NOT NULL,
-	StanMagazynowy INT NOT NULL,
+	Name NVARCHAR(255) NOT NULL,
+	CatalogNumber NVARCHAR(255) NOT NULL,
+	CategoryId INT NOT NULL,
+	Price DECIMAL(18, 2) NOT NULL,
+	StockQuantity INT NOT NULL,
 
-	CONSTRAINT FK_Czesci_Kategorie FOREIGN KEY (KategoriaId) REFERENCES Kategorie(Id),
-	CHECK (StanMagazynowy >= 0 AND Cena >= 0)
+	CONSTRAINT FK_Parts_Categories FOREIGN KEY (CategoryId) REFERENCES Categories(Id),
+	CHECK (StockQuantity >= 0 AND Price >= 0)
 );
+GO
 
-CREATE TABLE Klienci(
+CREATE TABLE Customers(
 	Id INT IDENTITY(1,1) PRIMARY KEY,
-	NazwaFirmy NVARCHAR(255) NOT NULL,
+	CompanyName NVARCHAR(255) NOT NULL,
 	NIP NVARCHAR(20) UNIQUE NOT NULL
 );
+GO
 
-CREATE TABLE Zamowienia (
+CREATE TABLE Orders (
 	Id INT IDENTITY(1,1) PRIMARY KEY,
-	DataZamowienia DATETIME NOT NULL DEFAULT GETDATE(),
-	KlientId INT NOT NULL,
-	FOREIGN KEY (KlientId) REFERENCES Klienci(Id)
+	OrderDate DATETIME NOT NULL DEFAULT GETDATE(),
+	CustomerId INT NOT NULL,
+	FOREIGN KEY (CustomerId) REFERENCES Customers(Id)
 );
+GO
 
-CREATE TABLE PozycjeZamowienia (
+CREATE TABLE OrderItems (
 	Id INT IDENTITY(1,1) PRIMARY KEY,
-	ZamowienieId INT NOT NULL,
-	CzescId INT NOT NULL,
-	Ilosc INT NOT NULL,
-	CenaJednostkowa DECIMAL(18, 2) NOT NULL,
-	FOREIGN KEY (ZamowienieId) REFERENCES Zamowienia(Id),
-	FOREIGN KEY (CzescId) REFERENCES Czesci(Id)
+	OrderId INT NOT NULL,
+	PartId INT NOT NULL,
+	Quantity INT NOT NULL,
+	UnitPrice DECIMAL(18, 2) NOT NULL,
+	FOREIGN KEY (OrderId) REFERENCES Orders(Id),
+	FOREIGN KEY (PartId) REFERENCES Parts(Id)
 );
+GO
