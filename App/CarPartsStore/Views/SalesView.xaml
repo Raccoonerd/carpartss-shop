@@ -32,9 +32,30 @@
             </Grid.RowDefinitions>
 
             <materialDesign:Card Grid.Row="0" Padding="12" Margin="0,0,0,10">
-                <TextBox materialDesign:HintAssist.Hint="Szukaj części po nazwie..."
-                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                 materialDesign:HintAssist.Hint="Szukaj części po nazwie..."
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                    Orientation="Vertical"
+                    VerticalAlignment="Center"
+                    Margin="16,0,0,0">
+                        <TextBlock Text="Pokaż niedostępne"
+                       VerticalAlignment="Center"
+                       Margin="0,0,0,8"/>
+                        <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                          IsChecked="{Binding ShowOutOfStock}"
+                          ToolTip="Pokazuj części ze stanem magazynowym 0"/>
+                    </StackPanel>
+                </Grid>
             </materialDesign:Card>
 
             <materialDesign:Card Grid.Row="1">

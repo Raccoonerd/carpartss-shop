@@ -37,6 +37,9 @@ namespace CarPartsStore.ViewModels
         [ObservableProperty] private string searchText;
         partial void OnSearchTextChanged(string value) => LoadParts();
 
+        [ObservableProperty] private bool showOutOfStock;
+        partial void OnShowOutOfStockChanged(bool value) => _ = LoadParts();
+
         public int ItemsCount => Cart.Count;
         public decimal TotalAmount => Cart.Sum(c => c.Total);
 
@@ -64,6 +67,11 @@ namespace CarPartsStore.ViewModels
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     query = query.Where(p => p.Name.Contains(SearchText));
+                }
+
+                if (!ShowOutOfStock)
+                {
+                    query = query.Where(p => p.StockQuantity > 0);
                 }
 
                 AvailableParts.Clear();
