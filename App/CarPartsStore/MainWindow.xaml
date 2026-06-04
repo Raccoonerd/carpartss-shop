@@ -14,84 +14,86 @@
         <vm:MainViewModel/>
     </Window.DataContext>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <materialDesign:DialogHost Identifier="MainDialogHost">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <materialDesign:Card Grid.Column="0"
-                             UniformCornerRadius="0"
-                             Background="{DynamicResource PrimaryHueDarkBrush}">
-            <StackPanel Margin="0,20,0,0">
-                <materialDesign:PackIcon Kind="Car"
-                                         Width="48" Height="48"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center"/>
-                <TextBlock Text="Menu"
-                           Foreground="White"
-                           FontSize="18" FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,30"/>
+            <materialDesign:Card Grid.Column="0"
+                                 UniformCornerRadius="0"
+                                 Background="{DynamicResource PrimaryHueDarkBrush}">
+                <StackPanel Margin="0,20,0,0">
+                    <materialDesign:PackIcon Kind="Car"
+                                             Width="48" Height="48"
+                                             Foreground="White"
+                                             HorizontalAlignment="Center"/>
+                    <TextBlock Text="Menu"
+                               Foreground="White"
+                               FontSize="18" FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,30"/>
 
-                <Button Command="{Binding ShowPartsCommand}"
-                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                        Foreground="White"
-                        Height="48" Margin="8,0,8,4"
-                        HorizontalContentAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Cog" VerticalAlignment="Center" Margin="4,0,16,0"/>
-                        <TextBlock Text="Części" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                    <Button Command="{Binding ShowPartsCommand}"
+                            Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                            Foreground="White"
+                            Height="48" Margin="8,0,8,4"
+                            HorizontalContentAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Cog" VerticalAlignment="Center" Margin="4,0,16,0"/>
+                            <TextBlock Text="Części" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                <Button Command="{Binding ShowCustomersCommand}"
-                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                        Foreground="White"
-                        Height="48" Margin="8,0,8,4"
-                        HorizontalContentAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="AccountGroup" VerticalAlignment="Center" Margin="4,0,16,0"/>
-                        <TextBlock Text="Klienci" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                    <Button Command="{Binding ShowCustomersCommand}"
+                            Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                            Foreground="White"
+                            Height="48" Margin="8,0,8,4"
+                            HorizontalContentAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountGroup" VerticalAlignment="Center" Margin="4,0,16,0"/>
+                            <TextBlock Text="Klienci" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                <Button Command="{Binding ShowSalesCommand}"
-                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                        Foreground="White"
-                        Height="48" Margin="8,0,8,4"
-                        HorizontalContentAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="CartOutline" VerticalAlignment="Center" Margin="4,0,16,0"/>
-                        <TextBlock Text="Sprzedaż" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                    <Button Command="{Binding ShowSalesCommand}"
+                            Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                            Foreground="White"
+                            Height="48" Margin="8,0,8,4"
+                            HorizontalContentAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="CartOutline" VerticalAlignment="Center" Margin="4,0,16,0"/>
+                            <TextBlock Text="Sprzedaż" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                <Button Command="{Binding ShowOrdersCommand}"
-                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                        Foreground="White"
-                        Height="48" Margin="8,0,8,4"
-                        HorizontalContentAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="ReceiptText" VerticalAlignment="Center" Margin="4,0,16,0"/>
-                        <TextBlock Text="Zamówienia" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </materialDesign:Card>
-
-        <materialDesign:Card Grid.Column="1"
-                             Margin="20"
-                             Padding="16"
-                             UniformCornerRadius="20"
-                             Panel.ZIndex="1">
-            <materialDesign:Card.Effect>
-                <DropShadowEffect ShadowDepth="0"
-                                  BlurRadius="25"
-                                  Color="Black"
-                                  Opacity="0.6"/>
-            </materialDesign:Card.Effect>
-            <ContentControl Content="{Binding CurrentView}"/>
-        </materialDesign:Card>
-    </Grid>
+                    <Button Command="{Binding ShowOrdersCommand}"
+                            Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                            Foreground="White"
+                            Height="48" Margin="8,0,8,4"
+                            HorizontalContentAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ReceiptText" VerticalAlignment="Center" Margin="4,0,16,0"/>
+                            <TextBlock Text="Zamówienia" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </materialDesign:Card>
+        
+            <materialDesign:Card Grid.Column="1"
+                                 Margin="20"
+                                 Padding="16"
+                                 UniformCornerRadius="20"
+                                 Panel.ZIndex="1">
+                <materialDesign:Card.Effect>
+                    <DropShadowEffect ShadowDepth="0"
+                                      BlurRadius="25"
+                                      Color="Black"
+                                      Opacity="0.6"/>
+                </materialDesign:Card.Effect>
+                <ContentControl Content="{Binding CurrentView}"/>
+            </materialDesign:Card>
+        </Grid>
+    </materialDesign:DialogHost>
 </Window>

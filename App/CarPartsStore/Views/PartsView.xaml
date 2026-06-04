@@ -8,7 +8,8 @@
 		<vm:PartsViewModel/>
 	</UserControl.DataContext>
 
-	<Grid Margin="10">
+
+    <Grid Margin="10">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
@@ -105,15 +106,31 @@
                          Text="{Binding FormCatalogNumber, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,0,16"/>
 
-				<ComboBox materialDesign:HintAssist.Hint="Kategoria"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          ItemsSource="{Binding Categories}"
-                          DisplayMemberPath="Name"
-                          SelectedValuePath="Id"
-                          SelectedValue="{Binding FormCategoryId}"
-                          Margin="0,0,0,16"/>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-				<TextBox materialDesign:HintAssist.Hint="Cena (zł)"
+                    <ComboBox Grid.Column="0"
+                                  materialDesign:HintAssist.Hint="Kategoria"
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                  ItemsSource="{Binding Categories}"
+                                  DisplayMemberPath="Name"
+                                  SelectedValuePath="Id"
+                                  SelectedValue="{Binding FormCategoryId}"/>
+
+                    <Button Grid.Column="1"
+                                Command="{Binding AddCategoryCommand}"
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                ToolTip="Dodaj nową kategorię"
+                                VerticalAlignment="Bottom"
+                                Margin="4,0,0,0">
+                        <materialDesign:PackIcon Kind="Plus"/>
+                    </Button>
+                </Grid>
+
+                <TextBox materialDesign:HintAssist.Hint="Cena (zł)"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                          Text="{Binding FormPrice, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,0,16"/>

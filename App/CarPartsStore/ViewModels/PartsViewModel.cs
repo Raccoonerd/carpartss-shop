@@ -5,7 +5,9 @@ using System.Windows;
 using CarPartsStore.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
+using CarPartsStore.Views;
 
 namespace CarPartsStore.ViewModels
 {
@@ -74,6 +76,45 @@ namespace CarPartsStore.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show("Błąd wczytywania kategorii: " + ex.Message);
+            }
+        }
+
+        [RelayCommand]
+        private async Task AddCategory()
+        {
+            var dialog = new AddCategoryDialog();
+            var result = await DialogHost.Show(dialog, "MainDialogHost");
+
+            if (result is not true)
+                return;
+
+            var name = dialog.CategoryName;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                MessageBox.Show("Nazwa kategorii nie może być pusta.");
+                return;
+            }
+
+            try
+            {
+                using var db = new CarPartsStoreContext();
+
+                if (db.Categories.Any(c => c.Name == name))
+                {
+                    MessageBox.Show($"Kategoria \"{name}\" już istnieje.");
+                    return;
+                }
+
+                var newCategory = new Category { Name = name };
+                db.Categories.Add(newCategory);
+                db.SaveChanges();
+
+                LoadCategories();
+                FormCategoryId = newCategory.Id;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd dodawania kategorii: " + ex.Message);
             }
         }
 
