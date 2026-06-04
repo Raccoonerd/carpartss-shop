@@ -223,16 +223,28 @@ namespace CarPartsStore.ViewModels
                 return;
             }
 
-            var result = await DialogService.ShowConfirmAsync(
-                "Potwierdzenie",
-                $"Czy na pewno usunąć część \"{SelectedPart.Name}\"?");
-
-            if (result == false)
-                return;
-
             try
             {
                 using var db = new CarPartsStoreContext();
+                bool isUsedInOrders = await db.OrderItems
+                    .AnyAsync(oi => oi.PartId == SelectedPart.Id);
+
+                if (isUsedInOrders)
+                {
+                    await DialogService.ShowInfoAsync(
+                        "Nie można usunąć",
+                        $"Nie można usunąć części \"{SelectedPart.Name}\", " +
+                        "ponieważ znajduje się na liście zamówień.");
+                    return;
+                }
+
+                var result = await DialogService.ShowConfirmAsync(
+                    "Potwierdzenie",
+                    $"Czy na pewno usunąć część \"{SelectedPart.Name}\"?");
+
+                if (result == false)
+                    return;
+
                 var part = await db.Parts.FindAsync(SelectedPart.Id);
                 if (part != null)
                 {
@@ -242,6 +254,13 @@ namespace CarPartsStore.ViewModels
 
                 await Load();
                 Clear();
+            }
+            catch (DbUpdateException ex) when (IsForeignKeyViolation(ex))
+            {
+                await DialogService.ShowInfoAsync(
+                    "Nie można usunąć",
+                    $"Nie można usunąć części \"{SelectedPart.Name}\", " +
+                    "ponieważ jest powiązana z innymi rekordami (np. zamówieniami).");
             }
             catch (Exception ex)
             {
@@ -300,6 +319,14 @@ namespace CarPartsStore.ViewModels
             }
 
             return (true, price, stock);
+        }
+
+        private static bool IsForeignKeyViolation(DbUpdateException ex)
+        {
+            var msg = ex.InnerException?.Message ?? string.Empty;
+            return msg.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase)
+                || msg.Contains("REFERENCE", StringComparison.OrdinalIgnoreCase)
+                || msg.Contains("constraint", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
