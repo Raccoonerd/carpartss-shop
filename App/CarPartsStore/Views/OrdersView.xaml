@@ -67,13 +67,28 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Column="0"
-                          materialDesign:HintAssist.Hint="Filtruj po kliencie"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          ItemsSource="{Binding Customers}"
-                          DisplayMemberPath="CompanyName"
-                          SelectedItem="{Binding FilterCustomer, Mode=TwoWay}"
-                          Margin="0,0,12,0"/>
+                <Grid Grid.Column="0" Margin="0,0,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0"
+                              materialDesign:HintAssist.Hint="Filtruj po kliencie"
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                              ItemsSource="{Binding Customers}"
+                              DisplayMemberPath="CompanyName"
+                              SelectedItem="{Binding FilterCustomer, Mode=TwoWay}"/>
+
+                    <Button Grid.Column="1"
+                            Command="{Binding ClearCustomerFilterCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="Wyczyść filtr klienta"
+                            VerticalAlignment="Bottom"
+                            Margin="4,0,0,0">
+                        <materialDesign:PackIcon Kind="Close"/>
+                    </Button>
+                </Grid>
 
                 <DatePicker Grid.Column="1"
                             materialDesign:HintAssist.Hint="Od daty"

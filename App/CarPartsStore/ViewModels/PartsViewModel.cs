@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using CarPartsStore.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
 using CarPartsStore.Views;
+using CarPartsStore.Services;
 
 namespace CarPartsStore.ViewModels
 {
@@ -22,7 +24,7 @@ namespace CarPartsStore.ViewModels
 
         [ObservableProperty]
         private string searchText;
-        partial void OnSearchTextChanged(string value) => Load();
+        partial void OnSearchTextChanged(string value) => _ = Load();
 
         [ObservableProperty] private string formName;
         [ObservableProperty] private string formCatalogNumber;
@@ -32,11 +34,16 @@ namespace CarPartsStore.ViewModels
 
         public PartsViewModel()
         {
-            LoadCategories();
-            Load();
+            _ = InitializeAsync();
         }
 
-        private void Load()
+        private async Task InitializeAsync()
+        {
+            await LoadCategories();
+            await Load();
+        }
+
+        private async Task Load()
         {
             if (Parts == null) return;
 
@@ -50,32 +57,34 @@ namespace CarPartsStore.ViewModels
                     query = query.Where(p => p.Name.Contains(SearchText));
                 }
 
+                var list = await query.ToListAsync();
+
                 Parts.Clear();
-                foreach (var p in query.ToList())
+                foreach (var p in list)
                     Parts.Add(p);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd wczytywania części: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd wczytywania części: " + ex.Message);
             }
         }
 
-        private void LoadCategories()
+        private async Task LoadCategories()
         {
             if (Categories == null) return;
 
             try
             {
                 using var db = new CarPartsStoreContext();
+                var list = await db.Categories.ToListAsync();
+
                 Categories.Clear();
-                foreach (var cat in db.Categories.ToList())
-                {
+                foreach (var cat in list)
                     Categories.Add(cat);
-                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd wczytywania kategorii: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd wczytywania kategorii: " + ex.Message);
             }
         }
 
@@ -91,7 +100,7 @@ namespace CarPartsStore.ViewModels
             var name = dialog.CategoryName;
             if (string.IsNullOrWhiteSpace(name))
             {
-                MessageBox.Show("Nazwa kategorii nie może być pusta.");
+                await DialogService.ShowInfoAsync("Błąd", "Nazwa kategorii nie może być pusta.");
                 return;
             }
 
@@ -99,29 +108,30 @@ namespace CarPartsStore.ViewModels
             {
                 using var db = new CarPartsStoreContext();
 
-                if (db.Categories.Any(c => c.Name == name))
+                if (await db.Categories.AnyAsync(c => c.Name == name))
                 {
-                    MessageBox.Show($"Kategoria \"{name}\" już istnieje.");
+                    await DialogService.ShowInfoAsync("Błąd", $"Kategoria \"{name}\" już istnieje.");
                     return;
                 }
 
                 var newCategory = new Category { Name = name };
                 db.Categories.Add(newCategory);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
 
-                LoadCategories();
+                await LoadCategories();
                 FormCategoryId = newCategory.Id;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd dodawania kategorii: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd dodawania kategorii: " + ex.Message);
             }
         }
 
         [RelayCommand]
-        private void Add()
+        private async Task Add()
         {
-            if (!ValidateForm(out decimal price, out int stock))
+            var (isValid, price, stock) = await ValidateForm();
+            if (!isValid)
                 return;
 
             try
@@ -132,94 +142,93 @@ namespace CarPartsStore.ViewModels
                     Name = FormName,
                     CatalogNumber = FormCatalogNumber,
                     CategoryId = FormCategoryId,
-                    Price = price,
-                    StockQuantity = stock
+                    Price = price!.Value,
+                    StockQuantity = stock!.Value
                 };
                 db.Parts.Add(newPart);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
 
-                Load();
+                await Load();
                 Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd dodawania: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd dodawania: " + ex.Message);
             }
         }
 
         [RelayCommand]
-        private void Save()
+        private async Task Save()
         {
             if (SelectedPart == null)
             {
-                MessageBox.Show("Wybierz część z listy.");
+                await DialogService.ShowInfoAsync("Brak Danych", "Wybierz część z listy.");
                 return;
             }
 
-            if (!ValidateForm(out decimal price, out int stock))
+            var (isValid, price, stock) = await ValidateForm();
+            if (!isValid)
                 return;
 
             try
             {
                 using var db = new CarPartsStoreContext();
-                var part = db.Parts.Find(SelectedPart.Id);
+                var part = await db.Parts.FindAsync(SelectedPart.Id);
                 if (part == null)
                 {
-                    MessageBox.Show("Nie znaleziono części w bazie.");
+                    await DialogService.ShowInfoAsync("Brak Danych", "Nie znaleziono części w bazie.");
                     return;
                 }
 
                 part.Name = FormName;
                 part.CatalogNumber = FormCatalogNumber;
                 part.CategoryId = FormCategoryId;
-                part.Price = price;
-                part.StockQuantity = stock;
+                part.Price = price!.Value;
+                part.StockQuantity = stock!.Value;
 
-                db.SaveChanges();
+                await db.SaveChangesAsync();
 
-                Load();
+                await Load();
                 Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd zapisu: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd zapisu: " + ex.Message);
             }
         }
 
         [RelayCommand]
-        private void Delete()
+        private async Task Delete()
         {
             if (SelectedPart == null)
             {
-                MessageBox.Show("Wybierz część z listy.");
+                await DialogService.ShowInfoAsync("Brak Danych", "Wybierz część z listy.");
                 return;
             }
 
-            var result = MessageBox.Show(
-                $"Czy na pewno usunąć część \"{SelectedPart.Name}\"?",
+            var result = await DialogService.ShowConfirmAsync(
                 "Potwierdzenie",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+                $"Czy na pewno usunąć część \"{SelectedPart.Name}\"?");
 
-            if (result != MessageBoxResult.Yes)
+            if (result == false)
                 return;
 
             try
             {
                 using var db = new CarPartsStoreContext();
-                var part = db.Parts.Find(SelectedPart.Id);
+                var part = await db.Parts.FindAsync(SelectedPart.Id);
                 if (part != null)
                 {
                     db.Parts.Remove(part);
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
                 }
 
-                Load();
+                await Load();
                 Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd usuwania: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd usuwania: " + ex.Message);
             }
         }
 
@@ -245,38 +254,35 @@ namespace CarPartsStore.ViewModels
             FormStock = part.StockQuantity.ToString();
         }
 
-        private bool ValidateForm(out decimal price, out int stock)
+        private async Task<(bool isValid, decimal? price, int? stock)> ValidateForm()
         {
-            price = 0;
-            stock = 0;
-
             if (string.IsNullOrWhiteSpace(FormName))
             {
-                MessageBox.Show("Podaj nazwę.");
-                return false;
+                await DialogService.ShowInfoAsync("Brak Danych", "Podaj nazwę.");
+                return (false, null, null);
             }
             if (string.IsNullOrWhiteSpace(FormCatalogNumber))
             {
-                MessageBox.Show("Podaj numer katalogowy.");
-                return false;
+                await DialogService.ShowInfoAsync("Brak Danych", "Podaj numer katalogowy.");
+                return (false, null, null);
             }
             if (FormCategoryId == 0)
             {
-                MessageBox.Show("Wybierz kategorię.");
-                return false;
+                await DialogService.ShowInfoAsync("Brak Danych", "Wybierz kategorię.");
+                return (false, null, null);
             }
-            if (!decimal.TryParse(FormPrice, out price) || price < 0)
+            if (!decimal.TryParse(FormPrice, out var price) || price < 0)
             {
-                MessageBox.Show("Podaj poprawną cenę (liczba >= 0).");
-                return false;
+                await DialogService.ShowInfoAsync("Brak Danych", "Podaj poprawną cenę (liczba >= 0).");
+                return (false, null, null);
             }
-            if (!int.TryParse(FormStock, out stock) || stock < 0)
+            if (!int.TryParse(FormStock, out var stock) || stock < 0)
             {
-                MessageBox.Show("Podaj poprawny stan magazynowy (liczba całkowita >= 0).");
-                return false;
+                await DialogService.ShowInfoAsync("Brak Danych", "Podaj poprawny stan magazynowy (liczba całkowita >= 0).");
+                return (false, null, null);
             }
 
-            return true;
+            return (true, price, stock);
         }
     }
 }

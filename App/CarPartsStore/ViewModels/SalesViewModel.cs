@@ -3,12 +3,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using CarPartsStore.Models;
+using CarPartsStore.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace CarPartsStore.ViewModels
 {
-    // Klasa pomocnicza dla pozycji koszyka (nie encja z bazy)
     public partial class CartItem : ObservableObject
     {
         public int PartId { get; set; }
@@ -52,7 +52,7 @@ namespace CarPartsStore.ViewModels
             };
         }
 
-        private void LoadParts()
+        private async Task LoadParts()
         {
             if (AvailableParts == null) return;
 
@@ -74,11 +74,11 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd wczytywania części: {ex.Message}");
+                await DialogService.ShowErrorAsync("Błąd", $"Błąd wczytywania części: {ex.Message}");
             }
         }
 
-        private void LoadCustomers()
+        private async Task LoadCustomers()
         {
             if (Customers == null) return;
 
@@ -93,22 +93,22 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd wczytywania klientów: {ex.Message}");
+                await DialogService.ShowErrorAsync("Błąd", $"Błąd wczytywania klientów: {ex.Message}");
             }
         }
 
         [RelayCommand]
-        private void AddToCart()
+        private async Task AddToCart()
         {
             if (SelectedPart == null)
             {
-                MessageBox.Show("Wybierz część z listy.");
+                await DialogService.ShowInfoAsync("Potrzebne Informacje", "Wybierz część z listy.");
                 return;
             }
 
             if (!int.TryParse(QuantityToAdd, out int quantity) || quantity <= 0)
             {
-                MessageBox.Show("Podaj poprawną ilość (liczba całkowita > 0).");
+                await DialogService.ShowInfoAsync("Potrzebne Informacje", "Podaj poprawną ilość (liczba całkowita > 0).");
                 return;
             }
 
@@ -116,8 +116,7 @@ namespace CarPartsStore.ViewModels
 
             if (inCart + quantity > SelectedPart.StockQuantity)
             {
-                MessageBox.Show(
-                    $"Nie można dodać {quantity} sztuk. W magazynie jest tylko " +
+                await DialogService.ShowInfoAsync("Błąd", $"Nie można dodać {quantity} sztuk. W magazynie jest tylko " +
                     $"{SelectedPart.StockQuantity - inCart} sztuk tej części.");
                 return;
             }
@@ -143,11 +142,11 @@ namespace CarPartsStore.ViewModels
         }
 
         [RelayCommand]
-        private void RemoveFromCart()
+        private async Task RemoveFromCart()
         {
             if (SelectedCartItem == null)
             {
-                MessageBox.Show("Wybierz pozycję z koszyka do usunięcia.");
+                await DialogService.ShowInfoAsync("Potrzebne Informacje", "Wybierz pozycję z koszyka do usunięcia.");
                 return;
             }
 
@@ -155,34 +154,32 @@ namespace CarPartsStore.ViewModels
         }
 
         [RelayCommand]
-        private void ClearCart()
+        private async Task ClearCart()
         {
             if (Cart.Count == 0) return;
 
-            var result = MessageBox.Show(
-                "Czy na pewno wyczyścić cały koszyk?",
+            var result = await DialogService.ShowConfirmAsync(
                 "Potwierdzenie",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+                "Czy na pewno wyczyścić cały koszyk?");
 
-            if (result == MessageBoxResult.Yes)
+            if (result == true)
             {
                 Cart.Clear();
             }
         }
 
         [RelayCommand]
-        private void Finalize()
+        private async Task Finalize()
         {
             if (SelectedCustomer == null)
             {
-                MessageBox.Show("Wybierz klienta.");
+                await DialogService.ShowInfoAsync("Potrzebne Informacje", "Wybierz klienta.");
                 return;
             }
 
             if (Cart.Count == 0)
             {
-                MessageBox.Show("Koszyk jest pusty.");
+                await DialogService.ShowInfoAsync("Potrzebne Informacje", "Koszyk jest pusty.");
                 return;
             }
 
@@ -196,12 +193,12 @@ namespace CarPartsStore.ViewModels
                     var part = db.Parts.Find(item.PartId);
                     if (part == null)
                     {
-                        MessageBox.Show($"Nie znaleziono w bazie części: {item.PartName}");
+                        await DialogService.ShowInfoAsync("Błąd", $"Nie znaleziono w bazie części: {item.PartName}");
                         return;
                     }
                     if (part.StockQuantity < item.Quantity)
                     {
-                        MessageBox.Show(
+                        await DialogService.ShowInfoAsync("Błąd",
                             $"Brak wystarczającej ilości części \"{part.Name}\".\n" +
                             $"W magazynie: {part.StockQuantity}, w koszyku: {item.Quantity}.");
                         return;
@@ -232,12 +229,9 @@ namespace CarPartsStore.ViewModels
 
                 db.SaveChanges();
 
-                MessageBox.Show(
+                await DialogService.ShowInfoAsync("Sukces",
                     $"Zamówienie nr {order.Id} zostało zapisane.\n" +
-                    $"Suma: {TotalAmount:N2} zł",
-                    "Sukces",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                    $"Suma: {TotalAmount:N2} zł");
 
                 Cart.Clear();
                 SelectedCustomer = null;
@@ -245,7 +239,7 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas finalizacji zamówienia: {ex.Message}");
+                await DialogService.ShowInfoAsync("Błąd", $"Błąd podczas finalizacji zamówienia: {ex.Message}");
             }
         }
     }

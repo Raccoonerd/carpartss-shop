@@ -1,4 +1,5 @@
 ﻿using CarPartsStore.Models;
+using CarPartsStore.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +48,7 @@ namespace CarPartsStore.ViewModels
             };
         }
 
-        private void LoadOrders()
+        private async Task LoadOrders()
         {
             if(Orders == null) return;
 
@@ -84,11 +85,11 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd wczytywania zamówień: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd wczytywania zamówień: " + ex.Message);
             }
         }
 
-        private void LoadOrderItems(Order order)
+        private async Task LoadOrderItems(Order order)
         {
             SelectedOrderItems.Clear();
 
@@ -109,11 +110,11 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd wczytywania pozycji zamówienia: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd wczytywania pozycji zamówienia: " + ex.Message);
             }
         }
 
-        private void LoadCustomers()
+        private async Task LoadCustomers()
         {
             if (Customers == null) return;
 
@@ -128,16 +129,22 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd wczytywania klientów: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", "Błąd wczytywania klientów: " + ex.Message);
             }
         }
 
         [RelayCommand]
-        private void ClearFilers()
+        private async Task ClearFilers()
         {
             FilterCustomer = null;
             FilterDateFrom = null;
             FilterDateTo = null;
+        }
+
+        [RelayCommand]
+        private void ClearCustomerFilter()
+        {
+            FilterCustomer = null;
         }
     }
 }

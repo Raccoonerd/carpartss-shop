@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using CarPartsStore.Models;
+using CarPartsStore.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -28,7 +29,7 @@ namespace CarPartsStore.ViewModels
             Load();
         }
 
-        private void Load()
+        private async Task Load()
         {
             if (Customers == null) return;
 
@@ -50,11 +51,11 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd wczytywania klientów: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", $"Błąd wczytywania klientów: {ex.Message}");
             }
         }
 
-        private void FillForm(Customer customer)
+        private async Task FillForm(Customer customer)
         {
             if (customer == null)
             {
@@ -67,9 +68,9 @@ namespace CarPartsStore.ViewModels
         }
 
         [RelayCommand]
-        private void Add()
+        private async Task Add()
         {
-            if (!ValidateForm()) return;
+            if (!await ValidateForm()) return;
 
             try
             {
@@ -77,7 +78,7 @@ namespace CarPartsStore.ViewModels
 
                 if (db.Customers.Any(c => c.Nip == FormNip))
                 {
-                    MessageBox.Show($"Klient z NIP '{FormNip}' już istnieje.");
+                    await DialogService.ShowInfoAsync("Duplikat", $"Klient z NIP '{FormNip}' już istnieje.");
                     return;
                 }
 
@@ -93,19 +94,19 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd dodawania klienta: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd", $"Błąd dodawania klienta: {ex.Message}");
             }
         }
 
         [RelayCommand]
-        private void Save()
+        private async Task Save()
         {
             if (SelectedCustomer == null)
             {
-                MessageBox.Show("Proszę wybrać klienta z listy.");
+                await DialogService.ShowInfoAsync("Brak danych", "Proszę wybrać klienta z listy.");
                 return;
             }
-            if (!ValidateForm()) return;
+            if (!await ValidateForm()) return;
 
             try
             {
@@ -114,13 +115,13 @@ namespace CarPartsStore.ViewModels
 
                 if (customer == null)
                 {
-                    MessageBox.Show($"Nie można znaleźć klienta o ID {SelectedCustomer.Id} w bazie danych.");
+                    await DialogService.ShowInfoAsync("Nie wczytano", $"Nie można znależć klienta o ID {SelectedCustomer.Id} w bazie danych");
                     return;
                 }
 
                 if (db.Customers.Any(c => c.Nip == FormNip && c.Id != SelectedCustomer.Id))
                 {
-                    MessageBox.Show($"Inny klient już ma NIP '{FormNip}'.");
+                    await DialogService.ShowInfoAsync("Duplikat", $"Inny klient już ma NIP '{FormNip}'.");
                     return;
                 }
 
@@ -132,26 +133,24 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd zapisywania klienta: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd zapisu", $"Błąd zapisywania klienta: {ex.Message}");
             }
         }
 
         [RelayCommand]
-        private void Delete()
+        private async Task Delete()
         {
             if (SelectedCustomer == null)
             {
-                MessageBox.Show("Proszę wybrać klienta do usunięcia.");
+                await DialogService.ShowInfoAsync("Brak danych", "Wybierz klienta do usunięcia.");
                 return;
             }
 
-            var result = MessageBox.Show(
-                $"Czy na pewno chcesz usunąć klienta '{SelectedCustomer.CompanyName}'?",
+            var result = await DialogService.ShowConfirmAsync(
                 "Potwierdzenie usunięcia",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+                $"Czy na pewno chcesz usunąć klienta '{SelectedCustomer.CompanyName}'?");
 
-            if (result != MessageBoxResult.Yes) return;
+            if (result == false) return;
 
             try
             {
@@ -168,7 +167,7 @@ namespace CarPartsStore.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd usuwania klienta: " + ex.Message);
+                await DialogService.ShowErrorAsync("Błąd usuwania", $"Błąd usuwania klienta: {ex.Message}");
             }
         }
 
@@ -180,16 +179,16 @@ namespace CarPartsStore.ViewModels
             FormNip = string.Empty;
         }
 
-        private bool ValidateForm()
+        private async Task<bool> ValidateForm()
         {
             if (string.IsNullOrWhiteSpace(FormCompanyName))
             {
-                MessageBox.Show("Proszę wpisać nazwę firmy.");
+                await DialogService.ShowInfoAsync("Brak danych", "Proszę wpisać nazwę firmy.");
                 return false;
             }
             if (string.IsNullOrWhiteSpace(FormNip))
             {
-                MessageBox.Show("Proszę wpisać NIP.");
+                await DialogService.ShowInfoAsync("Brak danych", "Proszę wpisać NIP.");
                 return false;
             }
             return true;
