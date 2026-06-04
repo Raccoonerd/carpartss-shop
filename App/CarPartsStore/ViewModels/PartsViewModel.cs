@@ -137,16 +137,33 @@ namespace CarPartsStore.ViewModels
             try
             {
                 using var db = new CarPartsStoreContext();
-                var newPart = new Part
+
+                var existing = await db.Parts
+                    .FirstOrDefaultAsync(p => p.CatalogNumber == FormCatalogNumber);
+
+                if (existing != null)
                 {
-                    Name = FormName,
-                    CatalogNumber = FormCatalogNumber,
-                    CategoryId = FormCategoryId,
-                    Price = price!.Value,
-                    StockQuantity = stock!.Value
-                };
-                db.Parts.Add(newPart);
-                await db.SaveChangesAsync();
+                    existing.StockQuantity += stock!.Value;
+                    await db.SaveChangesAsync();
+
+                    await DialogService.ShowInfoAsync(
+                        "Część już istnieje",
+                        $"Część o numerze katalogowym \"{existing.CatalogNumber}\" już istnieje. " +
+                        $"Zwiększono stan magazynowy o {stock!.Value} (obecnie: {existing.StockQuantity}).");
+                }
+                else
+                {
+                    var newPart = new Part
+                    {
+                        Name = FormName,
+                        CatalogNumber = FormCatalogNumber,
+                        CategoryId = FormCategoryId,
+                        Price = price!.Value,
+                        StockQuantity = stock!.Value
+                    };
+                    db.Parts.Add(newPart);
+                    await db.SaveChangesAsync();
+                }
 
                 await Load();
                 Clear();

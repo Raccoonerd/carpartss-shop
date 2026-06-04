@@ -120,15 +120,6 @@
                     </StackPanel>
                 </Button>
 
-                <Button Command="{Binding DeleteCommand}"
-                        Style="{StaticResource MaterialDesignFlatDarkBgButton}"
-                        Margin="0,0,0,8">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBlock Text="USUŃ"/>
-                    </StackPanel>
-                </Button>
-
                 <Button Command="{Binding ClearCommand}"
                         Style="{StaticResource MaterialDesignFlatDarkBgButton}"
                         Content="WYCZYŚĆ"/>

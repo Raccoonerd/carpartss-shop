@@ -138,40 +138,6 @@ namespace CarPartsStore.ViewModels
         }
 
         [RelayCommand]
-        private async Task Delete()
-        {
-            if (SelectedCustomer == null)
-            {
-                await DialogService.ShowInfoAsync("Brak danych", "Wybierz klienta do usunięcia.");
-                return;
-            }
-
-            var result = await DialogService.ShowConfirmAsync(
-                "Potwierdzenie usunięcia",
-                $"Czy na pewno chcesz usunąć klienta '{SelectedCustomer.CompanyName}'?");
-
-            if (result == false) return;
-
-            try
-            {
-                using var db = new CarPartsStoreContext();
-                var customer = db.Customers.Find(SelectedCustomer.Id);
-                if (customer != null)
-                {
-                    db.Customers.Remove(customer);
-                    db.SaveChanges();
-                }
-
-                Clear();
-                Load();
-            }
-            catch (Exception ex)
-            {
-                await DialogService.ShowErrorAsync("Błąd usuwania", $"Błąd usuwania klienta: {ex.Message}");
-            }
-        }
-
-        [RelayCommand]
         private void Clear()
         {
             SelectedCustomer = null;
