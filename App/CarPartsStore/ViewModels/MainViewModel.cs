@@ -22,5 +22,8 @@ namespace CarPartsStore.ViewModels
 
         [RelayCommand]
         private void ShowSales() => CurrentView = new SalesView();
+
+        [RelayCommand]
+        private void ShowOrders() => CurrentView = new OrdersView();
     }
 }

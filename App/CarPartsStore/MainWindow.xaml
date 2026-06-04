@@ -66,6 +66,17 @@
                         <TextBlock Text="Sprzedaż" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
+
+                <Button Command="{Binding ShowOrdersCommand}"
+                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                        Foreground="White"
+                        Height="48" Margin="8,0,8,4"
+                        HorizontalContentAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ReceiptText" VerticalAlignment="Center" Margin="4,0,16,0"/>
+                        <TextBlock Text="Zamówienia" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </materialDesign:Card>
 
